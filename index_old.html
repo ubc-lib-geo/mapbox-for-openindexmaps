@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <title>Available maps 092G</title>
-<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-<link href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css" rel="stylesheet">
-<script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
+<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet" />
 <style>
 	body { margin: 0; padding: 0;}
 	#map { position: absolute; top: 0; bottom: 0; width: 100%;}
@@ -27,13 +27,12 @@
 	mapboxgl.accessToken = 'pk.eyJ1IjoiZWN0MTIzIiwiYSI6ImNranAwN2V5cjA0OGwyc3RjMG81YmY5dzAifQ.E1gXN2BWib0Z0pnS95iOtg';
 
 
-const map = new mapboxgl.Map({
-	container: 'map',
-	zoom: 6,
-	center: [-125.193328, 50.506185],
-	style: 'mapbox://styles/ect123/ck4ym048y4upi1cmzoq53immx'
+var map = new mapboxgl.Map({
+		container: 'map',
+		zoom: 6,
+		center: [-125.193328, 50.506185],
+		style: 'mapbox://styles/ect123/ck4ym048y4upi1cmzoq53immx'
 });
-
 map.scrollZoom.disable();
 map.addControl(new mapboxgl.NavigationControl());
 map.on('load', function() {
@@ -49,7 +48,7 @@ map.on('load', function() {
 		'paint': {
 			'fill-color': '#FF8484',
 			'fill-opacity': 0,
-			'fill-outline-color': 'black'
+			'fill-outline-color': 'red'
 		},
 	});
 
@@ -69,40 +68,23 @@ map.on('load', function() {
 	});
 
 });
+map.on('mousemove', function(e) {
+var features = map.queryRenderedFeatures(e.point, {layers: ['092poly']});
 
+var displayProperties = ['properties'];
 
+var displayFeatures = features.map(function(feat) {
+		var displayFeat = {};
+			displayProperties.forEach(function(prop) {
+				displayFeat[prop] = feat[prop];
+				});
+			return displayFeat;
+				});
 
-map.on('click', (e) => {
-const features = map.queryRenderedFeatures(e.point, {layers: ['092poly']});
- 
-// Limit the number of properties we're displaying for
-// legibility and performance
-const displayProperties = [
-// 'type',
-'properties',
-// 'id',
-// 'layer',
-// 'source',
-// 'sourceLayer',
-// 'state'
-];
- 
-const displayFeatures = features.map((feat) => {
-	const displayFeat = {};
-	displayProperties.forEach((prop) => {
-		displayFeat[prop] = feat[prop];
-		});
-		return displayFeat;
-	});
- 
-// Write object as string with an indent of two spaces.
-document.getElementById('features').innerHTML = JSON.stringify(
-displayFeatures,
-null,
-2
-);
+document.getElementById('features').innerHTML = JSON.stringify(displayFeatures, null, 1.5)
 });
+
 </script>
- 
+
 </body>
 </html>
