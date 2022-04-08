@@ -146,9 +146,9 @@ async function mapData(){
         // Add the marker (show where the click is)
         add_marker(e);
 
+        // Get features at point click
         const features = map.queryRenderedFeatures(e.point, {layers: ['Data Layer Values']});
- 
-        // Limit the number of properties we're displaying for legibility and performance
+         // Limit the number of properties we're displaying for legibility and performance
         const displayProperties = [
         'properties',
         ];
