@@ -11,6 +11,12 @@
 
 <style>
 	body { margin: 0; padding: 0;}
+
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        }
+
 	#map { position: absolute; top: 0; bottom: 0; width: 100%;}
 	#map canvas {cursor: crosshair;}
 	#features {
@@ -18,7 +24,7 @@
 			top: 0;
 			left: 0;
 			bottom: 0;
-			width: 25%;
+			width: 100%;
 			overflow: auto;
 			background: rgba(255, 255, 255, 0.8);}
 
@@ -42,13 +48,47 @@
     .btn-control:hover {
         background-color: #4ea0da;
     }
+    /* Added some containers for positioning */
+    .page{
+        position: absolute; top: 0%; bottom: 0%; width: 100%;}
+    .mapcontainer{
+        position: absolute; top: 0%; width: 100%; height: 75%;}
+    .featurecontainer{
+        position: absolute; top: 75%; width: 100%; height: 25%;}
+    
+    
 </style>
 </head>
+
+<!-- Updated the formatting of the page -->
+<!-- Top is the map, bottom is the table -->
 <body>
-<div id="map"></div>
-<!-- Added a zoom to button -->
-<button id="zoomto" class="btn-control">Zoom to bounds</button>
-<pre id="features"></pre>
+<div class="page">
+    <div class="mapcontainer">
+        <button id="zoomto" class="btn-control">Zoom to bounds</button>
+        <div id="map"></div>
+    </div>
+    <div class="featurecontainer">
+        <div id="features">
+            <!-- <table width = "100%">
+                <tr>
+                    <th>Label</th>
+                </tr>
+            </table> -->
+            <!-- <div jput="tbody_template">
+                <tr>
+                <td>{{name}}</td>
+                <td>{{score}}</td>
+                </tr>
+            </div>  -->
+            <!-- <table>
+                <tbody id="tbody">
+                </tbody>
+            </table> -->
+        </div>
+    </div>
+</div>
+
 <pre id="json"></pre>
 <script>
 	mapboxgl.accessToken = 'pk.eyJ1IjoiZWN0MTIzIiwiYSI6ImNranAwN2V5cjA0OGwyc3RjMG81YmY5dzAifQ.E1gXN2BWib0Z0pnS95iOtg';
@@ -56,7 +96,7 @@
 // Location of the geojson
 // Specifying here allows for it to be more easily changed.
 // There is also an option where we could load .geojsons local storage if desired.
-const dPath = 'https://raw.githubusercontent.com/ubc-lib-geo/mapbox-for-openindexmaps/main/data/columbiaRiverBasin_1958.geojson';
+const dPath = 'https://raw.githubusercontent.com/ubc-lib-geo/mapbox-for-openindexmaps/main/data/nts-092-50k_Filled.geojson';
 
 // There isn't an explicit way to get the bounds of a geojson with GLJS
 //   - seems there should be?
@@ -149,25 +189,31 @@ async function mapData(){
         // Get features at point click
         const features = map.queryRenderedFeatures(e.point, {layers: ['Data Layer Values']});
          // Limit the number of properties we're displaying for legibility and performance
-        const displayProperties = [
-        'properties',
-        ];
-        
-        // Loop through the deired featrues to display
-        const displayFeatures = features.map((feat) => {
-            const displayFeat = {};
-            displayProperties.forEach((prop) => {
-                displayFeat[prop] = feat[prop];
-                });
-                return displayFeat;
-            });
-        
-        // Write object as string with an indent of two spaces.
-        document.getElementById('features').innerHTML = JSON.stringify(
-        displayFeatures,
-        null,
-        2
-        );
+       
+        // Create the table
+
+        function makeTable (json) {
+            var tbl = ('<table width = 100%><tr>');
+            for (var key in features[0].properties){
+                tbl = tbl+'<th>'+key+'</th>';
+            };
+            tbl = tbl + '</tr>'
+            for (var i = 0; i < features.length; i++) {
+                tbl = tbl+"<tr>"
+                // var keys = Object.keys(obj);
+                for (var key in features[i].properties)
+                    tbl = tbl+("<td>" + features[i].properties[key] + "</td>");
+                    // tr = tr+("<td>" + json[i].properties.label + "</td>");
+                    // tr = tr+("<td>" + json[i].properties.label + "</td>");
+                tbl = tbl+"</tr>"
+            };
+            tbl = tbl +'</table>';
+            return tbl;
+            }
+
+        // document.getElementById('features').innerHTML = displayFeatures[0].properties //makeTable(displayFeatures)
+        document.getElementById('features').innerHTML = makeTable()
+
     });
 
     
